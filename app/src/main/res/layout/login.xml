@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/co"
+        android:id="@+id/logo"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="30dp"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:hint="Username"
+        android:inputType="text"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:drawableLeft="@drawable/user"
+        android:drawablePadding="10dp"
+        android:id="@+id/username_login" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:layout_marginTop="15dp"
+        android:layout_gravity="center"
+        android:drawableLeft="@drawable/pass"
+        android:drawablePadding="10dp"
+        android:id="@+id/pass_login" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/login_btn"
+        android:text="Log In"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:layout_marginTop="15dp"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Forgot your password?"
+        android:gravity="center"
+        android:layout_marginTop="15dp"
+        android:id="@+id/forgot_pass" />
+
+</LinearLayout>

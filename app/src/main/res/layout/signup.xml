@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:layout_marginTop="40dp"
+        android:hint="Name"
+        android:inputType="text"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:drawableLeft="@drawable/user"
+        android:drawablePadding="10dp"
+        android:id="@+id/name_signup" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:hint="E-mail"
+        android:inputType="text"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:drawableLeft="@drawable/email"
+        android:drawablePadding="10dp"
+        android:id="@+id/email_signup" />
+
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:layout_marginTop="25dp"
+        android:hint="Username"
+        android:inputType="text"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:drawableLeft="@drawable/user"
+        android:drawablePadding="10dp"
+        android:id="@+id/username_signup" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:drawableLeft="@drawable/pass"
+        android:drawablePadding="10dp"
+        android:id="@+id/pass_signup" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:hint="Repeat Password"
+        android:inputType="textPassword"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:drawableLeft="@drawable/pass"
+        android:drawablePadding="10dp"
+        android:id="@+id/pass_conf_signup" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/signup_btn"
+        android:text="Sign Up"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:layout_marginTop="25dp"
+        android:layout_gravity="center"/>
+
+</LinearLayout>
