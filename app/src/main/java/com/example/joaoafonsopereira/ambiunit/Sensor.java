@@ -121,6 +121,8 @@ public class Sensor extends Fragment implements AdapterView.OnItemSelectedListen
                     adapter.disable();
                     manager.destroy();
                     Toast.makeText(getActivity(),"Bluetooth turned off", Toast.LENGTH_SHORT).show();
+                    value.setText("---");
+                    cohb_value.setText("---");
                 }
             }
         });
@@ -253,8 +255,12 @@ public class Sensor extends Fragment implements AdapterView.OnItemSelectedListen
 
             @Override
             public void onClick(View v) {
-                handler.removeMessages(0);
-                Toast.makeText(getActivity(), "Stop recording", Toast.LENGTH_SHORT).show();
+                if (value.getText().equals("---")) {
+                    Toast.makeText(getActivity(), "No value displayed!", Toast.LENGTH_SHORT).show();
+                } else {
+                    handler.removeMessages(0);
+                    Toast.makeText(getActivity(), "Stop recording", Toast.LENGTH_SHORT).show();
+                }
             }
 
         });
@@ -264,8 +270,10 @@ public class Sensor extends Fragment implements AdapterView.OnItemSelectedListen
 
             @Override
             public void onClick(View v) {
+
                 if (manager.getConnectedDevices().isEmpty()) {
                     value.setText("---");
+                    Toast.makeText(getActivity(), "No bluetooth connection", Toast.LENGTH_SHORT).show();
                 } else {
                     Intent env = new Intent(getActivity(), Environment.class);
                     env.putExtra("username", username);
