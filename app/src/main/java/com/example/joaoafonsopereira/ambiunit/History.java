@@ -19,13 +19,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import android.support.v4.app.Fragment;
 
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.LegendRenderer;
+import com.jjoe64.graphview.ValueDependentColor;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
@@ -36,7 +37,7 @@ import java.util.ArrayList;
  * Created by Asus on 31/03/2019.
  */
 
-public class History extends Fragment implements AdapterView.OnItemSelectedListener {
+public class History extends Fragment {
 
     private static final String TAG = "History";
     DatabaseConnection db;
@@ -54,13 +55,6 @@ public class History extends Fragment implements AdapterView.OnItemSelectedListe
 
         db = new DatabaseConnection(History.this.getActivity());
         username = getActivity().getIntent().getStringExtra("username");
-
-        Spinner spinner = (Spinner) view.findViewById(R.id.sensor_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(History.this.getActivity(), R.array.sensors, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
-        spinner.setSelection(0);
 
         graph = (GraphView) view.findViewById(R.id.graph);
 
@@ -114,15 +108,15 @@ public class History extends Fragment implements AdapterView.OnItemSelectedListe
                     Toast.makeText(getContext(), "Choose a date", Toast.LENGTH_SHORT).show();
                 } else {
                     date_txt = date_txt.replace("/", "-");
-                    ArrayList<String> meas = db.getMeasurementsByDate(date_txt, sensor, username);
+                    ArrayList<String> meas = db.getMeasurementsByDate(date_txt, username);
                     if (meas.size()==0) {
                         Toast.makeText(getActivity(), "No measurements made", Toast.LENGTH_SHORT).show();
                     }
                     else {
 
-                        String data = sensor + " data:\n";
-                        for (int i = 0; i<meas.size(); i=i+2) {
-                            data = data + meas.get(i) + "   " + meas.get(i+1) + "\n";
+                        String data = "TIME|CO-AX|CO-D4|MiCS|TEMP|HUM\n\n";
+                        for (int i = 0; i<meas.size(); i=i+6) {
+                            data = data + meas.get(i) + "   " + meas.get(i+1) + "   " +  meas.get(i+2) + "   " + meas.get(i+3) + "   " + meas.get(i+4) + "   " + meas.get(i+5)+ "\n";
                         }
 
                         String email = db.getEmail(username);
@@ -146,97 +140,54 @@ public class History extends Fragment implements AdapterView.OnItemSelectedListe
 
         });
 
+        ArrayList<String> co_ax = db.getCOAXMeasurements(username);
+        ArrayList<String> co_d4 = db.getCOD4Measurements(username);
+        ArrayList<String> mics = db.getMICSMeasurements(username);
+
+        int size = co_ax.size();
+
+        LineGraphSeries<DataPoint> ax_series = new LineGraphSeries<>();
+        LineGraphSeries<DataPoint> d4_series = new LineGraphSeries<>();
+        LineGraphSeries<DataPoint> mics_series = new LineGraphSeries<>();
+
+        for(int i=1;i<size;i++){
+            DataPoint point = new DataPoint(i, Double.parseDouble(co_ax.get(co_ax.size()-i-1)));
+            ax_series.appendData(point, true, size);
+        }
+
+        for(int i=1;i<size;i++){
+            DataPoint point = new DataPoint(i, Double.parseDouble(co_d4.get(co_ax.size()-i-1)));
+            d4_series.appendData(point, true, size);
+        }
+
+        for(int i=1;i<size;i++){
+            DataPoint point = new DataPoint(i, Double.parseDouble(mics.get(co_ax.size()-i-1)));
+            mics_series.appendData(point, true, size);
+        }
+
+        graph.getViewport().setXAxisBoundsManual(true);
+        graph.getViewport().setMaxX(size);
+
+        ax_series.setColor(Color.RED);
+        ax_series.setTitle("CO-AX");
+        d4_series.setColor(Color.GREEN);
+        d4_series.setTitle("CO-D4");
+        mics_series.setColor(Color.BLUE);
+        mics_series.setTitle("MiCS-4514");
+
+
+
+        graph.addSeries(ax_series);
+        graph.addSeries(d4_series);
+        graph.addSeries(mics_series);
+
+        graph.getLegendRenderer().setVisible(true);
+        graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
+
         return view;
 
 
     }
 
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        sensor = parent.getItemAtPosition(position).toString();
-        graph.removeAllSeries();
-        ArrayList<String> m = db.getMeasurements(sensor, username);
-        if (m.size()>=20) {
-            graph.getViewport().setXAxisBoundsManual(true);
-            graph.getViewport().setMaxX(19);
-            series = new LineGraphSeries<>(new DataPoint[]{
-                    new DataPoint(0, Integer.parseInt(m.get(m.size() - 20))),
-                    new DataPoint(1, Integer.parseInt(m.get(m.size() - 19))),
-                    new DataPoint(2, Integer.parseInt(m.get(m.size() - 18))),
-                    new DataPoint(3, Integer.parseInt(m.get(m.size() - 17))),
-                    new DataPoint(4, Integer.parseInt(m.get(m.size() - 16))),
-                    new DataPoint(5, Integer.parseInt(m.get(m.size() - 15))),
-                    new DataPoint(6, Integer.parseInt(m.get(m.size() - 14))),
-                    new DataPoint(7, Integer.parseInt(m.get(m.size() - 13))),
-                    new DataPoint(8, Integer.parseInt(m.get(m.size() - 12))),
-                    new DataPoint(9, Integer.parseInt(m.get(m.size() - 11))),
-                    new DataPoint(10, Integer.parseInt(m.get(m.size() - 10))),
-                    new DataPoint(11, Integer.parseInt(m.get(m.size() - 9))),
-                    new DataPoint(12, Integer.parseInt(m.get(m.size() - 8))),
-                    new DataPoint(13, Integer.parseInt(m.get(m.size() - 7))),
-                    new DataPoint(14, Integer.parseInt(m.get(m.size() - 6))),
-                    new DataPoint(15, Integer.parseInt(m.get(m.size() - 5))),
-                    new DataPoint(16, Integer.parseInt(m.get(m.size() - 4))),
-                    new DataPoint(17, Integer.parseInt(m.get(m.size() - 3))),
-                    new DataPoint(18, Integer.parseInt(m.get(m.size() - 2))),
-                    new DataPoint(19, Integer.parseInt(m.get(m.size() - 1)))
-            });
-            graph.addSeries(series);
-        }
-        else if (m.size()>=15 && m.size()<20) {
-            graph.getViewport().setXAxisBoundsManual(true);
-            graph.getViewport().setMaxX(14);
-            series = new LineGraphSeries<>(new DataPoint[]{
-                    new DataPoint(0, Integer.parseInt(m.get(m.size() - 15))),
-                    new DataPoint(1, Integer.parseInt(m.get(m.size() - 14))),
-                    new DataPoint(2, Integer.parseInt(m.get(m.size() - 13))),
-                    new DataPoint(3, Integer.parseInt(m.get(m.size() - 12))),
-                    new DataPoint(4, Integer.parseInt(m.get(m.size() - 11))),
-                    new DataPoint(5, Integer.parseInt(m.get(m.size() - 10))),
-                    new DataPoint(6, Integer.parseInt(m.get(m.size() - 9))),
-                    new DataPoint(7, Integer.parseInt(m.get(m.size() - 8))),
-                    new DataPoint(8, Integer.parseInt(m.get(m.size() - 7))),
-                    new DataPoint(9, Integer.parseInt(m.get(m.size() - 6))),
-                    new DataPoint(10, Integer.parseInt(m.get(m.size() - 5))),
-                    new DataPoint(11, Integer.parseInt(m.get(m.size() - 4))),
-                    new DataPoint(12, Integer.parseInt(m.get(m.size() - 3))),
-                    new DataPoint(13, Integer.parseInt(m.get(m.size() - 2))),
-                    new DataPoint(14, Integer.parseInt(m.get(m.size() - 1)))
-            });
-            graph.addSeries(series);
-        }
-        else if (m.size()>=10 && m.size()<15) {
-            graph.getViewport().setXAxisBoundsManual(true);
-            graph.getViewport().setMaxX(9);
-            series = new LineGraphSeries<>(new DataPoint[]{
-                    new DataPoint(0, Integer.parseInt(m.get(m.size() - 10))),
-                    new DataPoint(1, Integer.parseInt(m.get(m.size() - 9))),
-                    new DataPoint(2, Integer.parseInt(m.get(m.size() - 8))),
-                    new DataPoint(3, Integer.parseInt(m.get(m.size() - 7))),
-                    new DataPoint(4, Integer.parseInt(m.get(m.size() - 6))),
-                    new DataPoint(5, Integer.parseInt(m.get(m.size() - 5))),
-                    new DataPoint(6, Integer.parseInt(m.get(m.size() - 4))),
-                    new DataPoint(7, Integer.parseInt(m.get(m.size() - 3))),
-                    new DataPoint(8, Integer.parseInt(m.get(m.size() - 2))),
-                    new DataPoint(9, Integer.parseInt(m.get(m.size() - 1)))
-            });
-            graph.addSeries(series);
-        }
-        else if(m.size()>=5 && m.size()<10) {
-            graph.getViewport().setXAxisBoundsManual(true);
-            graph.getViewport().setMaxX(4);
-            series = new LineGraphSeries<>(new DataPoint[]{
-                    new DataPoint(0, Integer.parseInt(m.get(m.size()-5))),
-                    new DataPoint(1, Integer.parseInt(m.get(m.size()-4))),
-                    new DataPoint(2, Integer.parseInt(m.get(m.size()-3))),
-                    new DataPoint(3, Integer.parseInt(m.get(m.size()-2))),
-                    new DataPoint(4, Integer.parseInt(m.get(m.size()-1)))
-            });
-            graph.addSeries(series);
-        }
-    }
-
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
 
 }

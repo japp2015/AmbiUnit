@@ -6,67 +6,32 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp">
-
-        <TextView
-            android:text="Sensor"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/sensor_txt"
-            android:layout_marginTop="20dp"
-            android:paddingLeft="20dp"
-            android:layout_gravity="top"
-            android:gravity="center_vertical"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="15dp"
-            android:textStyle="bold"/>
-
-        <Spinner
-            android:id="@+id/sensor_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sensor"
-            android:background="@android:drawable/btn_dropdown"
-            android:prompt="@string/spinner"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_gravity="center"
-            android:layout_weight="1" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
+        android:orientation="horizontal"
         android:weightSum="1">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Send data from"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
+            android:text="Send data from"
             android:textColor="@color/colorPrimaryDark" />
 
         <TextView
-            android:text="select"
+            android:id="@+id/date_choice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/date_choice"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:text="select" />
 
         <Button
+            android:id="@+id/send_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:text="Send"
-            android:id="@+id/send_btn" />
-
+            android:text="Send" />
 
 
     </LinearLayout>
@@ -74,6 +39,6 @@
     <com.jjoe64.graphview.GraphView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/graph"/>
+        android:id="@+id/graph" />
 
 </LinearLayout>

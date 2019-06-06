@@ -26,7 +26,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
         sqLiteDatabase.execSQL("CREATE TABLE registeruser (ID INTEGER PRIMARY  KEY AUTOINCREMENT, username TEXT, password TEXT, name TEXT, email TEXT)");
-        sqLiteDatabase.execSQL("CREATE TABLE measurements (ID INTEGER PRIMARY  KEY AUTOINCREMENT, value DOUBLE, date TEXT, time TEXT, sensor TEXT, username TEXT)");
+        sqLiteDatabase.execSQL("CREATE TABLE measurements (ID INTEGER PRIMARY  KEY AUTOINCREMENT, ax_value DOUBLE, d4_value DOUBLE, mics_value, temperature DOUBLE, humidity DOUBLE, date TEXT, time TEXT, username TEXT)");
     }
 
     @Override
@@ -151,39 +151,74 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return db.delete("registeruser", "username=?", new String[]{username});
     }
 
-    public long addData(double value, String date, String time, String sensor, String username) {
+    public long addData(double ax_value, double d4_value, double mics_value, double temperature, double humidity, String date, String time, String username) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("value", value);
+        contentValues.put("ax_value", ax_value);
+        contentValues.put("d4_value", d4_value);
+        contentValues.put("mics_value", mics_value);
+        contentValues.put("temperature", temperature);
+        contentValues.put("humidity", humidity);
         contentValues.put("date", date);
         contentValues.put("time", time);
-        contentValues.put("sensor", sensor);
         contentValues.put("username", username);
         long res = db.insert("measurements", null, contentValues);
         db.close();
         return res;
     }
 
-    public ArrayList getMeasurementsByDate(String date, String sensor, String username) {
+    public ArrayList getMeasurementsByDate(String date, String username) {
         ArrayList<String> data = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] args = {date, sensor, username};
-        String query = "SELECT time, value FROM measurements WHERE date=? AND sensor=? AND username=?";
+        String[] args = {date, username};
+        String query = "SELECT time, ax_value, d4_value, mics_value, temperature, humidity FROM measurements WHERE date=? AND username=?";
         Cursor c = db.rawQuery(query,args);
         while(c.moveToNext()){
             data.add(c.getString(0));
             data.add(c.getString(1));
+            data.add(c.getString(2));
+            data.add(c.getString(3));
+            data.add(c.getString(4));
+            data.add(c.getString(5));
         }
         c.close();
         db.close();
         return data;
     }
 
-    public ArrayList getMeasurements(String sensor, String username) {
+    public ArrayList getCOAXMeasurements(String username) {
         ArrayList<String> data = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] args = {sensor, username};
-        String query = "SELECT value FROM measurements WHERE sensor=? AND username=?";
+        String[] args = {username};
+        String query = "SELECT ax_value FROM measurements WHERE username=?";
+        Cursor c = db.rawQuery(query,args);
+        while(c.moveToNext()){
+            data.add(c.getString(0));
+        }
+        c.close();
+        db.close();
+        return data;
+    }
+
+    public ArrayList getCOD4Measurements(String username) {
+        ArrayList<String> data = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] args = {username};
+        String query = "SELECT d4_value FROM measurements WHERE username=?";
+        Cursor c = db.rawQuery(query,args);
+        while(c.moveToNext()){
+            data.add(c.getString(0));
+        }
+        c.close();
+        db.close();
+        return data;
+    }
+
+    public ArrayList getMICSMeasurements(String username) {
+        ArrayList<String> data = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] args = {username};
+        String query = "SELECT mics_value FROM measurements WHERE username=?";
         Cursor c = db.rawQuery(query,args);
         while(c.moveToNext()){
             data.add(c.getString(0));

@@ -39,15 +39,12 @@ public class Sensor extends Fragment {
 
     DatabaseConnection db;
     String username;
-    private String sensor;
-    private Button ax_btn, d4_btn, mics_btn;
     private Button check_environment;
     private Switch bswitch;
-    private TextView unit_txt;
     private Button unit_btn;
     private boolean unit_ppm = true;
-    private TextView value;
-    private TextView cohb_value;
+    private TextView mean_txt;
+    private TextView battery_value, ax_value, d4_value, mics_value, temperature_value, humidity_value, mean_value, cohb_value;
     private Button startRecord;
     private Button stopRecord;
     private double measurement_mgm3;
@@ -57,21 +54,12 @@ public class Sensor extends Fragment {
     private boolean recording = false;
     private Handler handler;
     private int recording_delay;
-    private String temperature, humidity;
     private BleManager manager;
     private BleDevice connDevice;
-    private String sensor_value;
     private RadioButton mgm3, ppm;
 
     private final static String SERVICE_UUID = "68cd187c-94b9-4bdf-98f6-96f18f8e565f";
-    private final static String TEMPERATURE_UUID = "884d33ea-23bc-439c-add5-1aed2fc7b9f4";
-    private final static String HUMIDITY_UUID = "884d33ea-23bc-439c-add5-1aed2fc7b9f5";
-    private final static String CO_AX_UUID = "884d33ea-23bc-439c-add5-1aed2fc7b9f6";
-    private final static String CO_D4_UUID = "884d33ea-23bc-439c-add5-1aed2fc7b9f7";
-    private final static String MICS_UUID = "884d33ea-23bc-439c-add5-1aed2fc7b9f8";
-    private final static String BATTERY_UUID = "884d33ea-23bc-439c-add5-1aed2fc7b9f9";
-
-    private static String CURRENT_UUID = CO_AX_UUID;
+    private final static String CHARACTERISTIC_UUID = "884d33ea-23bc-439c-add5-1aed2fc7b9f5";
 
 
     @Override
@@ -83,7 +71,15 @@ public class Sensor extends Fragment {
         //getContext().deleteDatabase(DATABASE_NAME);
         // ------------------------------------------------------------------
 
-        value = view.findViewById(R.id.value);
+        mean_txt = view.findViewById(R.id.mean_txt);
+
+        battery_value = view.findViewById(R.id.battery_value);
+        ax_value = view.findViewById(R.id.ax_value);
+        d4_value = view.findViewById(R.id.d4_value);
+        mics_value = view.findViewById(R.id.mics_value);
+        temperature_value = view.findViewById(R.id.temperature_value);
+        humidity_value = view.findViewById(R.id.humidity_value);
+        mean_value = view.findViewById(R.id.mean_value);
         cohb_value = view.findViewById(R.id.cohb_pred);
 
         db = new DatabaseConnection(Sensor.this.getActivity());
@@ -94,7 +90,7 @@ public class Sensor extends Fragment {
 
         // ------------------------------------BLUETOOTH ----------------------------------------------------------------
 
-        bswitch = (Switch) view.findViewById(R.id.bluetooth_switch);
+        bswitch = view.findViewById(R.id.bluetooth_switch);
 
         if (getActivity().getIntent().getStringExtra("bluetooth_on") == null) {
             bswitch.setChecked(false);
@@ -121,11 +117,14 @@ public class Sensor extends Fragment {
                     adapter.disable();
                     manager.destroy();
                     Toast.makeText(getActivity(), "Bluetooth turned off", Toast.LENGTH_SHORT).show();
-                    value.setText("---");
+                    battery_value.setText("Battery Level:   ---");
+                    ax_value.setText("---");
+                    d4_value.setText("---");
+                    mics_value.setText("---");
+                    temperature_value.setText("---");
+                    humidity_value.setText("---");
+                    mean_value.setText("---");
                     cohb_value.setText("---");
-                    ax_btn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                    d4_btn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                    mics_btn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
                 }
             }
         });
@@ -133,161 +132,64 @@ public class Sensor extends Fragment {
 
         // ---------------------------------------------------------------------------------------------------------------
 
-        /*
-        Spinner spinner = (Spinner) view.findViewById(R.id.sensor_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(Sensor.this.getActivity(), R.array.sensors, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
-        spinner.setSelection(0);*/
 
-        ax_btn = view.findViewById(R.id.ax_btn);
-        d4_btn = view.findViewById(R.id.d4_btn);
-        mics_btn = view.findViewById(R.id.mics_btn);
-
-        ax_btn.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (manager.getConnectedDevices().isEmpty()) {
-                    value.setText("---");
-                    Toast.makeText(getActivity(), "No connection", Toast.LENGTH_SHORT).show();
-                } else {
-                    ax_btn.setTextColor(getResources().getColor(R.color.colorPrimary));
-                    d4_btn.setTextColor(getResources().getColor(R.color.white));
-                    mics_btn.setTextColor(getResources().getColor(R.color.white));
-                    sensor = "CO-AX";
-                    connDevice = manager.getConnectedDevices().get(0);
-                    manager.cancelNotify(connDevice, SERVICE_UUID, CURRENT_UUID);
-                    CURRENT_UUID = CO_AX_UUID;
-                    manager.notify(connDevice, SERVICE_UUID, CURRENT_UUID, new BleNotifyCallback() {
-                        @Override
-                        public void onFail(int failCode, String info, BleDevice device) {
-                            Toast.makeText(getActivity(), "Failed to receive data from CO-AX", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onCharacteristicChanged(byte[] data, BleDevice device) {
-                            sensor_value = new String(data);
-                            value.setText(sensor_value);
-                            double co_hb = 3.217383 * Double.parseDouble(sensor_value) + 0.0067;
-                            cohb_value.setText(String.valueOf(round.format(co_hb)));
-
-                            if (unit_ppm == false) {
-                                unit_txt = getActivity().findViewById(R.id.unit_txt);
-                                mgm3 = getActivity().findViewById(R.id.mgm3);
-                                ppm = getActivity().findViewById(R.id.ppm);
-                                unit_txt.setText("ppm");
-                                mgm3.setChecked(false);
-                                ppm.setChecked(true);
-                            }
-                        }
-
-                        @Override
-                        public void onNotifySuccess(String notifySuccessUuid, BleDevice device) {
-                            Toast.makeText(getActivity(), "Receiving data from CO-AX", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+        if (manager.getConnectedDevices().isEmpty()) {
+            battery_value.setText("Battery Level:   ---");
+            ax_value.setText("---");
+            d4_value.setText("---");
+            mics_value.setText("---");
+            temperature_value.setText("---");
+            humidity_value.setText("---");
+            mean_value.setText("---");
+            cohb_value.setText("---");
+            Toast.makeText(getActivity(), "No connection", Toast.LENGTH_SHORT).show();
+        } else {
+            connDevice = manager.getConnectedDevices().get(0);
+            manager.notify(connDevice, SERVICE_UUID, CHARACTERISTIC_UUID, new BleNotifyCallback() {
+                @Override
+                public void onFail(int failCode, String info, BleDevice device) {
+                    Toast.makeText(getActivity(), "Failed to receive data - " + info, Toast.LENGTH_SHORT).show();
                 }
-            }
 
+                @Override
+                public void onCharacteristicChanged(byte[] data, BleDevice device) {
+                    String dataString = new String(data);
+                    String[] values = dataString.split(";");
+                    String temperature = values[1].trim();
+                    String humidity = values[2].trim();
+                    String co_ax = values[3].trim();
+                    String co_d4 = values[4].trim();
+                    String mics = values[5].trim();
+                    String battery = values[6].trim();
+
+                    battery_value.setText("Battery Level:   " + battery);
+                    ax_value.setText(co_ax);
+                    d4_value.setText(co_d4);
+                    mics_value.setText(mics);
+                    temperature_value.setText(temperature);
+                    humidity_value.setText(humidity);
+
+                    double mean = (Double.parseDouble(co_ax) + Double.parseDouble(co_d4) + Double.parseDouble(mics))/3;
+                    mean_value.setText(String.valueOf(round.format(mean)));
+                    mean_txt.setText("Mean (ppm)");
+
+                    double co_hb = 3.217383 * mean + 0.0067;
+                    cohb_value.setText(String.valueOf(round.format(co_hb)));
+
+                    if (unit_ppm == false) {
+                        mgm3 = getActivity().findViewById(R.id.mgm3);
+                        ppm = getActivity().findViewById(R.id.ppm);
+                        mgm3.setChecked(false);
+                        ppm.setChecked(true);
+                    }
+                }
+
+                @Override
+                public void onNotifySuccess(String notifySuccessUuid, BleDevice device) {
+                    Toast.makeText(getActivity(), "Receiving data", Toast.LENGTH_SHORT).show();
+                }
             });
-
-        d4_btn.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (manager.getConnectedDevices().isEmpty()) {
-                    value.setText("---");
-                    Toast.makeText(getActivity(), "No connection", Toast.LENGTH_SHORT).show();
-                } else {
-                    ax_btn.setTextColor(getResources().getColor(R.color.white));
-                    d4_btn.setTextColor(getResources().getColor(R.color.colorPrimary));
-                    mics_btn.setTextColor(getResources().getColor(R.color.white));
-                    sensor = "CO-D4";
-                    connDevice = manager.getConnectedDevices().get(0);
-                    manager.cancelNotify(connDevice, SERVICE_UUID, CURRENT_UUID);
-                    CURRENT_UUID = CO_D4_UUID;
-                    manager.notify(connDevice, SERVICE_UUID, CURRENT_UUID, new BleNotifyCallback() {
-                        @Override
-                        public void onFail(int failCode, String info, BleDevice device) {
-                            Toast.makeText(getActivity(), "Failed to receive data from CO-D4", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onCharacteristicChanged(byte[] data, BleDevice device) {
-                            sensor_value = new String(data);
-                            value.setText(sensor_value);
-                            double co_hb = 3.217383 * Double.parseDouble(sensor_value) + 0.0067;
-                            cohb_value.setText(String.valueOf(round.format(co_hb)));
-
-                            if (unit_ppm == false) {
-                                unit_txt = getActivity().findViewById(R.id.unit_txt);
-                                mgm3 = getActivity().findViewById(R.id.mgm3);
-                                ppm = getActivity().findViewById(R.id.ppm);
-                                unit_txt.setText("ppm");
-                                mgm3.setChecked(false);
-                                ppm.setChecked(true);
-                            }
-                        }
-
-                        @Override
-                        public void onNotifySuccess(String notifySuccessUuid, BleDevice device) {
-                            Toast.makeText(getActivity(), "Receiving data from CO-D4", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }
-
-        });
-
-        mics_btn.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (manager.getConnectedDevices().isEmpty()) {
-                    value.setText("---");
-                    Toast.makeText(getActivity(), "No connection", Toast.LENGTH_SHORT).show();
-                } else {
-                    ax_btn.setTextColor(getResources().getColor(R.color.white));
-                    d4_btn.setTextColor(getResources().getColor(R.color.white));
-                    mics_btn.setTextColor(getResources().getColor(R.color.colorPrimary));
-                    sensor = "MiCS-4514";
-                    connDevice = manager.getConnectedDevices().get(0);
-                    manager.cancelNotify(connDevice, SERVICE_UUID, CURRENT_UUID);
-                    CURRENT_UUID = MICS_UUID;
-                    manager.notify(connDevice, SERVICE_UUID, CURRENT_UUID, new BleNotifyCallback() {
-                        @Override
-                        public void onFail(int failCode, String info, BleDevice device) {
-                            Toast.makeText(getActivity(), "Failed to receive data from MiCS-4514", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onCharacteristicChanged(byte[] data, BleDevice device) {
-                            sensor_value = new String(data);
-                            value.setText(sensor_value);
-                            double co_hb = 3.217383 * Double.parseDouble(sensor_value) + 0.0067;
-                            cohb_value.setText(String.valueOf(round.format(co_hb)));
-
-                            if (unit_ppm == false) {
-                                unit_txt = getActivity().findViewById(R.id.unit_txt);
-                                mgm3 = getActivity().findViewById(R.id.mgm3);
-                                ppm = getActivity().findViewById(R.id.ppm);
-                                unit_txt.setText("ppm");
-                                mgm3.setChecked(false);
-                                ppm.setChecked(true);
-                            }
-                        }
-
-                        @Override
-                        public void onNotifySuccess(String notifySuccessUuid, BleDevice device) {
-                            Toast.makeText(getActivity(), "Receiving data from MiCS-4514", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }
-
-        });
+        }
 
 
             unit_btn = view.findViewById(R.id.unit_btn);
@@ -296,30 +198,29 @@ public class Sensor extends Fragment {
                 @Override
                 public void onClick(View v) {
 
-                    if (!value.getText().toString().equals("---")) {
+                    if (!mean_value.getText().toString().equals("---")) {
 
-                        measurement_ppm = Double.parseDouble(value.getText().toString().trim().replace(",", "."));
-                        unit_txt = view.findViewById(R.id.unit_txt);
+                        measurement_ppm = Double.parseDouble(mean_value.getText().toString().trim().replace(",", "."));
 
                         mgm3 = view.findViewById(R.id.mgm3);
                         ppm = view.findViewById(R.id.ppm);
 
                         if (mgm3.isChecked()) {
-                            unit_txt.setText("mg/m3");
 
                             if (unit_ppm == true) {
                                 measurement_mgm3 = measurement_ppm * CONVERSION_FACTOR;
                                 String.format("%.2f", measurement_mgm3);
-                                value.setText(String.valueOf(round.format(measurement_mgm3)));
+                                mean_value.setText(String.valueOf(round.format(measurement_mgm3)));
+                                mean_txt.setText("Mean (mg/m3)");
                             }
 
                             unit_ppm = false;
                         } else {
-                            unit_txt.setText("ppm");
 
                             if (unit_ppm == false) {
                                 measurement_ppm = measurement_mgm3 / CONVERSION_FACTOR;
-                                value.setText(String.valueOf(round.format(measurement_ppm)));
+                                mean_value.setText(String.valueOf(round.format(measurement_ppm)));
+                                mean_txt.setText("Mean (ppm)");
                             }
 
                             unit_ppm = true;
@@ -340,7 +241,7 @@ public class Sensor extends Fragment {
                 @Override
                 public void onClick(View v) {
 
-                    if (value.getText().equals("---")) {
+                    if (ax_value.getText().equals("---") || d4_value.getText().equals("---") || mics_value.getText().equals("---") || temperature_value.getText().equals("---") || humidity_value.getText().equals("---")) {
                         Toast.makeText(getActivity(), "No value displayed!", Toast.LENGTH_SHORT).show();
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -378,7 +279,7 @@ public class Sensor extends Fragment {
                                         SimpleDateFormat t = new SimpleDateFormat("hh:mm:ss");
                                         String time = t.format(new Date());
 
-                                        db.addData(Double.parseDouble(value.getText().toString().trim()), date, time, sensor, username);
+                                        db.addData(Double.parseDouble(ax_value.getText().toString().trim()), Double.parseDouble(d4_value.getText().toString().trim()), Double.parseDouble(mics_value.getText().toString().trim()), Double.parseDouble(temperature_value.getText().toString().trim()), Double.parseDouble(humidity_value.getText().toString().trim()), date, time, username);
                                         handler.postDelayed(this, delay);
                                     }
                                 }, delay);
@@ -403,8 +304,8 @@ public class Sensor extends Fragment {
 
                 @Override
                 public void onClick(View v) {
-                    if (value.getText().equals("---")) {
-                        Toast.makeText(getActivity(), "No value displayed!", Toast.LENGTH_SHORT).show();
+                    if (ax_value.getText().equals("---") || d4_value.getText().equals("---") || mics_value.getText().equals("---") || temperature_value.getText().equals("---") || humidity_value.getText().equals("---")) {
+                        Toast.makeText(getActivity(), "No values displayed!", Toast.LENGTH_SHORT).show();
                     } else {
                         if (recording == true) {
                             handler.removeMessages(0);
@@ -420,49 +321,8 @@ public class Sensor extends Fragment {
 
             });
 
-            check_environment = view.findViewById(R.id.environment);
-            check_environment.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-
-                    if (manager.getConnectedDevices().isEmpty()) {
-                        value.setText("---");
-                        Toast.makeText(getActivity(), "No bluetooth connection", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Intent env = new Intent(getActivity(), Environment.class);
-                        env.putExtra("username", username);
-                        env.putExtra("humidity", getActivity().getIntent().getStringExtra("humidity"));
-                        startActivity(env);
-                    }
-                }
-            });
         return view;
     }
 
-
-    /*
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String text = parent.getItemAtPosition(position).toString();
-        sensor = text;
-
-            switch (text) {
-                case "CO-D4":
-                    Intent d4 = new Intent(getActivity(), MainActivity.class);
-                    d4.putExtra("username", username);
-                    d4.putExtra("current_uuid", CO_D4_UUID);
-                    startActivity(d4);
-                case "MICS-4514":
-                    Intent mics = new Intent(getActivity(), MainActivity.class);
-                    mics.putExtra("username", username);
-                    mics.putExtra("current_uuid", MICS_UUID);
-                    startActivity(mics);
-            }
-
-    }
-
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }*/
 }
 

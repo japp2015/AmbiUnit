@@ -26,7 +26,7 @@ import com.ficat.easyble.gatt.callback.BleNotifyCallback;
 public class Settings extends Fragment {
 
     private DatabaseConnection db;
-    private Button logout_btn, battery;
+    private Button logout_btn;
     private EditText crt_pass;
     private EditText new_pass;
     private EditText new_pass_conf;
@@ -37,10 +37,6 @@ public class Settings extends Fragment {
     private TextView user;
     private TextView usern, email, meas;
     private BleManager manager;
-
-    private final static String SERVICE_UUID = "68cd187c-94b9-4bdf-98f6-96f18f8e565f";
-    private final static String BATTERY_UUID = "884d33ea-23bc-439c-add5-1aed2fc7b9f9";
-
 
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -72,38 +68,6 @@ public class Settings extends Fragment {
                 Intent login = new Intent(getActivity(), Enter.class);
                 startActivity(login);
 
-            }
-        });
-
-
-        battery = view.findViewById(R.id.battery_btn);
-        battery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                manager = BleManager.getInstance(getContext());
-                if (manager.getConnectedDevices().isEmpty()) {
-                    Toast.makeText(getActivity(), "No device connected!", Toast.LENGTH_SHORT).show();
-                } else {
-                    final BleDevice connDevice = manager.getConnectedDevices().get(0);
-                    manager.notify(connDevice, SERVICE_UUID, BATTERY_UUID, new BleNotifyCallback() {
-                        @Override
-                        public void onFail(int failCode, String info, BleDevice device) {
-                            Toast.makeText(getActivity(), "Failed to receive battery level", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onCharacteristicChanged(byte[] data, BleDevice device) {
-                            String bat = new String(data);
-                            Toast.makeText(getActivity(), "Battery level: " + bat, Toast.LENGTH_SHORT).show();
-                            manager.cancelNotify(connDevice,SERVICE_UUID,BATTERY_UUID);
-                        }
-
-                        @Override
-                        public void onNotifySuccess(String notifySuccessUuid, BleDevice device) {
-                        }
-                    });
-                }
             }
         });
 

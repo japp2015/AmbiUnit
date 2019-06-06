@@ -197,7 +197,7 @@ public class Bluetooth extends AppCompatActivity implements View.OnClickListener
                         }); */
 
                         //--------- HUMIDITY --------------------------------------------------------------------
-                        manager.notify(connDevice, SERVICE_UUID, HUMIDITY_UUID, new BleNotifyCallback() {
+                        /*manager.notify(connDevice, SERVICE_UUID, HUMIDITY_UUID, new BleNotifyCallback() {
                             @Override
                             public void onCharacteristicChanged(byte[] data_h, BleDevice device) {
                                 //Toast.makeText(Bluetooth.this, "receive notification data" + new String(data_h), Toast.LENGTH_SHORT).show();
@@ -218,7 +218,7 @@ public class Bluetooth extends AppCompatActivity implements View.OnClickListener
                             public void onFail(int failCode, String info, BleDevice device) {
                                 Toast.makeText(Bluetooth.this, "Failed to notify - " + info, Toast.LENGTH_LONG).show();
                             }
-                        });/*
+                        });*//*
                         //--------- COAX --------------------------------------------------------------------
                             manager.notify(connDevice, SERVICE_UUID, CO_AX_UUID, new BleNotifyCallback() {
                             @Override

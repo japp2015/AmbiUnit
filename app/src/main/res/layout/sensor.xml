@@ -16,7 +16,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="20dp">
 
                 <Switch
                     android:id="@+id/bluetooth_switch"
@@ -31,42 +31,16 @@
                     android:textStyle="bold"
                     android:layout_marginRight="0dp"/>
 
-                <Button
-                    android:id="@+id/ax_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="CO-AX"
-                    android:textSize="10dp" />
 
-                <Button
-                    android:id="@+id/d4_btn"
+                <TextView
+                    android:id="@+id/battery_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
                     android:layout_weight="1"
-                    android:text="CO-D4"
-                    android:textSize="10dp" />
+                    android:gravity="left"
+                    android:textStyle="bold" />
 
-                <Button
-                    android:id="@+id/mics_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="MiCS"
-                    android:textSize="10dp"
-                    android:layout_marginRight="5dp"/>
-                <!--
-                <Spinner
-                    android:id="@+id/sensor_spinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginRight="30dp"
-                    android:background="@android:drawable/btn_dropdown"
-                    android:prompt="@string/spinner"
-                    android:text="Sensor" />-->
 
             </LinearLayout>
 
@@ -131,31 +105,99 @@
                 android:textSize="25dp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/unit_txt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
-                android:gravity="center"
-                android:text="ppm"
-                android:textSize="20dp" />
-
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_gravity="center"
                 android:orientation="horizontal"
-                android:gravity="center">
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp">
 
-                <TextView
-                    android:id="@+id/value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="---"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="35dp"
-                    android:textStyle="bold" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        android:gravity="center"
+                        android:text="CO-AX"
+                        android:textSize="15dp" />
+
+                    <TextView
+                        android:id="@+id/ax_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:text="---"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="25dp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_marginRight="50dp"
+                    android:layout_marginLeft="50dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="0dp"
+                        android:gravity="center"
+                        android:text="CO-D4"
+                        android:textSize="15dp" />
+
+                    <TextView
+                        android:id="@+id/d4_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:text="---"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="25dp"
+                        android:textStyle="bold" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        android:gravity="center"
+                        android:text="MiCS-4514"
+                        android:textSize="15dp" />
+
+                    <TextView
+                        android:id="@+id/mics_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:text="---"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="25dp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -165,14 +207,40 @@
                 android:layout_marginTop="15dp"
                 android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/environment"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="75dp"
-                    android:layout_marginRight="75dp"
+                    android:layout_marginRight="10dp"
                     android:layout_weight="1"
-                    android:text="Check Environment" />
+                    android:gravity="right"
+                    android:text="Temperature (ºC)" />
+
+                <TextView
+                    android:id="@+id/temperature_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:text="---"
+                    android:textColor="@color/colorPrimaryDark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="Humidity (%)" />
+
+                <TextView
+                    android:id="@+id/humidity_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:text="---"
+                    android:textColor="@color/colorPrimaryDark" />
+
 
             </LinearLayout>
 
@@ -183,15 +251,16 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/mean_txt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:gravity="right"
-                    android:text="[COHb] prediction (mL CO / mL blood)" />
+                    android:text="Mean (ppm)" />
 
                 <TextView
-                    android:id="@+id/cohb_pred"
+                    android:id="@+id/mean_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -199,7 +268,34 @@
                     android:text="---"
                     android:textColor="@color/colorPrimaryDark" />
 
+
             </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="[COHb](mL CO / mL blood)" />
+
+            <TextView
+                android:id="@+id/cohb_pred"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:text="---"
+                android:textColor="@color/colorPrimaryDark" />
+
+        </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
