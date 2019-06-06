@@ -156,6 +156,7 @@ public class Bluetooth extends AppCompatActivity implements View.OnClickListener
 
                         Intent intent = new Intent(Bluetooth.this, MainActivity.class);
                         intent.putExtra("username", username);
+                        intent.putExtra("bluetooth_on", "true");
                         startActivity(intent);
                         /*
                         //--------- TEMPERATURE --------------------------------------------------------------------

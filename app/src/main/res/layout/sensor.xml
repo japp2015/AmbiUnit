@@ -16,21 +16,46 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="0dp">
+                android:layout_marginTop="10dp">
 
                 <Switch
                     android:id="@+id/bluetooth_switch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
                     android:checked="false"
                     android:paddingLeft="15dp"
                     android:switchPadding="0dp"
                     android:text="Bluetooth"
                     android:textAppearance="@style/TextAppearance.AppCompat"
                     android:textSize="15dp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:layout_marginRight="0dp"/>
 
+                <Button
+                    android:id="@+id/ax_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="CO-AX"
+                    android:textSize="10dp" />
+
+                <Button
+                    android:id="@+id/d4_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="CO-D4"
+                    android:textSize="10dp" />
+
+                <Button
+                    android:id="@+id/mics_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="MiCS"
+                    android:textSize="10dp"
+                    android:layout_marginRight="5dp"/>
+                <!--
                 <Spinner
                     android:id="@+id/sensor_spinner"
                     android:layout_width="match_parent"
@@ -41,7 +66,7 @@
                     android:layout_marginRight="30dp"
                     android:background="@android:drawable/btn_dropdown"
                     android:prompt="@string/spinner"
-                    android:text="Sensor" />
+                    android:text="Sensor" />-->
 
             </LinearLayout>
 
@@ -115,16 +140,24 @@
                 android:text="ppm"
                 android:textSize="20dp" />
 
-            <TextView
-                android:id="@+id/value"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:gravity="center"
-                android:text="---"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="35dp"
-                android:textStyle="bold" />
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:text="---"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="35dp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
